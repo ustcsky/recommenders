@@ -1,0 +1,79 @@
+
+586it [00:15, 37.72it/s]
+236it [01:39,  2.37it/s]
+7538it [00:02, 3342.43it/s]
+step 1080 , total_loss: 1.5170, data_loss: 1.3149: : 1086it [22:22,  1.24s/it]
+586it [00:05, 105.60it/s]
+236it [01:21,  2.89it/s]
+7538it [00:02, 3600.34it/s]
+step 1080 , total_loss: 1.4152, data_loss: 1.3023: : 1086it [19:18,  1.07s/it]
+586it [00:03, 177.19it/s]
+236it [00:49,  4.78it/s]
+7538it [00:01, 5921.16it/s]
+step 1080 , total_loss: 1.3777, data_loss: 1.1998: : 1086it [16:46,  1.08it/s]
+586it [00:03, 173.12it/s]
+236it [00:51,  4.63it/s]
+7538it [00:01, 5585.37it/s]
+step 1080 , total_loss: 1.3497, data_loss: 1.2041: : 1086it [17:21,  1.04it/s]
+586it [00:03, 160.33it/s]
+236it [00:55,  4.24it/s]
+7538it [00:01, 5605.45it/s]
+step 1080 , total_loss: 1.3305, data_loss: 1.2178: : 1086it [17:07,  1.06it/s]
+586it [00:03, 158.71it/s]
+236it [00:48,  4.83it/s]
+7538it [00:01, 5710.47it/s]
+step 1080 , total_loss: 1.3106, data_loss: 1.3557: : 1086it [17:13,  1.05it/s]
+586it [00:03, 177.05it/s]
+236it [00:53,  4.41it/s]
+7538it [00:01, 5637.08it/s]
+step 1080 , total_loss: 1.2922, data_loss: 1.1997: : 1086it [17:15,  1.05it/s]
+586it [00:03, 174.15it/s]
+236it [00:54,  4.33it/s]
+7538it [00:01, 5735.72it/s]
+step 1080 , total_loss: 1.2744, data_loss: 1.4492: : 1086it [17:02,  1.06it/s]
+586it [00:03, 163.40it/s]
+236it [00:50,  4.65it/s]
+7538it [00:01, 5636.08it/s]
+586it [00:03, 156.18it/s]
+236it [00:50,  4.71it/s]
+7538it [00:01, 5426.03it/s]
+System version: 3.6.10 |Anaconda, Inc.| (default, May  8 2020, 02:54:21) 
+[GCC 7.3.0]
+Tensorflow version: 1.15.2
+data_path: /data/fengbin/recommenders/data/nrms_data
+data_format=news,iterator_type=None,support_quick_scoring=True,wordEmb_file=/data/fengbin/recommenders/data/nrms_data/utils/embedding.npy,wordDict_file=/data/fengbin/recommenders/data/nrms_data/utils/word_dict.pkl,userDict_file=/data/fengbin/recommenders/data/nrms_data/utils/uid2index.pkl,vertDict_file=None,subvertDict_file=None,title_size=30,body_size=None,word_emb_dim=300,word_size=None,user_num=None,vert_num=None,subvert_num=None,his_size=50,npratio=4,dropout=0.2,attention_hidden_dim=200,head_num=20,head_dim=20,cnn_activation=None,dense_activation=None,filter_num=200,window_size=3,vert_emb_dim=100,subvert_emb_dim=100,gru_unit=400,type=ini,user_emb_dim=50,learning_rate=0.0001,loss=cross_entropy_loss,optimizer=adam,epochs=8,batch_size=32,show_step=10,metrics=['group_auc', 'mean_mrr', 'ndcg@5;10']
+{'group_auc': 0.4792, 'mean_mrr': 0.2059, 'ndcg@5': 0.2045, 'ndcg@10': 0.2701}
+at epoch 1
+train info: logloss loss:1.516476264096536
+eval info: group_auc:0.5779, mean_mrr:0.247, ndcg@10:0.3328, ndcg@5:0.2609
+at epoch 1 , train time: 1342.6 eval time: 101.8
+at epoch 2
+train info: logloss loss:1.41545276374009
+eval info: group_auc:0.6024, mean_mrr:0.2596, ndcg@10:0.3498, ndcg@5:0.2772
+at epoch 2 , train time: 1158.4 eval time: 60.2
+at epoch 3
+train info: logloss loss:1.3775587608801068
+eval info: group_auc:0.6061, mean_mrr:0.2649, ndcg@10:0.3564, ndcg@5:0.2846
+at epoch 3 , train time: 1006.9 eval time: 62.1
+at epoch 4
+train info: logloss loss:1.3497813515241635
+eval info: group_auc:0.6118, mean_mrr:0.2682, ndcg@10:0.3603, ndcg@5:0.2891
+at epoch 4 , train time: 1041.2 eval time: 67.2
+at epoch 5
+train info: logloss loss:1.330698819834444
+eval info: group_auc:0.6096, mean_mrr:0.2695, ndcg@10:0.3614, ndcg@5:0.2908
+at epoch 5 , train time: 1027.5 eval time: 60.5
+at epoch 6
+train info: logloss loss:1.3110630230679696
+eval info: group_auc:0.6218, mean_mrr:0.2752, ndcg@10:0.3695, ndcg@5:0.2985
+at epoch 6 , train time: 1033.7 eval time: 64.6
+at epoch 7
+train info: logloss loss:1.291879616279848
+eval info: group_auc:0.6211, mean_mrr:0.2763, ndcg@10:0.3707, ndcg@5:0.2995
+at epoch 7 , train time: 1035.7 eval time: 65.8
+at epoch 8
+train info: logloss loss:1.2739294399653132
+eval info: group_auc:0.6198, mean_mrr:0.2768, ndcg@10:0.3707, ndcg@5:0.2996
+at epoch 8 , train time: 1022.6 eval time: 62.2
+{'group_auc': 0.6198, 'mean_mrr': 0.2768, 'ndcg@5': 0.2996, 'ndcg@10': 0.3707}
+{'application/papermill.record+json': {'res_syn': {'group_auc': 0.6198, 'mean_mrr': 0.2768, 'ndcg@5': 0.2996, 'ndcg@10': 0.3707}}}

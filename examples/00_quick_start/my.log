@@ -1,0 +1,15 @@
+nohup: ignoring input
+  File "lstur_MIND_yq.py", line 61
+SyntaxError: Non-ASCII character '\xe5' in file lstur_MIND_yq.py on line 61, but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details
+nohup: ignoring input
+Traceback (most recent call last):
+  File "lstur_MIND_yq.py", line 6, in <module>
+    from reco_utils.recommender.deeprec.deeprec_utils import download_deeprec_resources
+  File "../../reco_utils/recommender/deeprec/deeprec_utils.py", line 509
+SyntaxError: Non-ASCII character '\xef' in file ../../reco_utils/recommender/deeprec/deeprec_utils.py on line 509, but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details
+nohup: ignoring input
+Traceback (most recent call last):
+  File "lstur_MIND_yq.py", line 6, in <module>
+    from reco_utils.recommender.deeprec.deeprec_utils import download_deeprec_resources
+  File "../../reco_utils/recommender/deeprec/deeprec_utils.py", line 509
+SyntaxError: Non-ASCII character '\xef' in file ../../reco_utils/recommender/deeprec/deeprec_utils.py on line 509, but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details
