@@ -1,3 +1,4 @@
+# coding:utf-8
 from importlib import import_module
 import torch
 import torch.nn as nn
@@ -8,17 +9,22 @@ class Model(nn.Module):
         super(Model, self).__init__()
         print('Making model...')
 
+        args.cpu = False # ??
         self.cpu = args.cpu
         self.device = torch.device('cpu' if args.cpu else 'cuda')
+        print('args.cpu:', args.cpu)
         args.device = self.device
+        print('args.device:', args.device)
         self.n_GPUs = args.n_GPUs
+        print('self.n_GPUs:', self.n_GPUs)
 
         module = import_module('model.' + args.model.upper())
         self.model = module.make_model(args, word_embedding).to(self.device)
+        print('self.device:', self.device)
         if args.load is not None:
             print('Loading model from', args.load)
-            checkpoint = torch.load(args.load, map_location=self.device)
-            self.model.load_state_dict(checkpoint['model'])
+            checkpoint = torch.load(args.load, map_location=self.device) # 提取网络结构
+            self.model.load_state_dict(checkpoint['model']) # 加载网络权重参数
         else:
             print('Finish making model ' + args.model)
 

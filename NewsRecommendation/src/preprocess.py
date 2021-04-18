@@ -9,11 +9,11 @@ def process_behaviors(args):
     random.seed(args.seed)
     if args.train:
         print('Preprocessing behaviors in training set...')
-        train_set = os.path.join(args.train_dir, 'behaviors.tsv')
-        train_behaviors = pd.read_table(train_set, header=None, na_filter=False,
+        train_set = os.path.join(args.train_dir, 'behaviors_yq_50_80.tsv')
+        train_behaviors = pd.read_table(train_set, header=None, usecols=[0, 1, 2, 3, 4], na_filter=False,
                                         names=['impression_id','user_id','time','history','impressions'])
-        train_behaviors.history = train_behaviors.history.str.split(' ')
-        train_behaviors.impressions = train_behaviors.impressions.str.split(' ')
+        train_behaviors.history = train_behaviors.history.astype(str).str.split(' ')
+        train_behaviors.impressions = train_behaviors.impressions.astype(str).str.split(' ')
 
         # encode users
         user_dict = {}
@@ -53,18 +53,20 @@ def process_behaviors(args):
         print('Finish behaviors preprocessing for training')
 
     print('Preprocessing behaviors in testing set...')
-    test_set = os.path.join(args.test_dir, 'behaviors.tsv')
-    test_behaviors = pd.read_table(test_set, header=None, na_filter=False,
+    test_set = os.path.join(args.test_dir, 'behaviors_yq_50_80.tsv')
+    test_behaviors = pd.read_table(test_set, header=None, usecols=[0, 1, 2, 3, 4], na_filter=False,
                                     names=['impression_id', 'user_id', 'time', 'history', 'impressions'])
-    test_behaviors.history = test_behaviors.history.str.split(' ')
-    test_behaviors.impressions = test_behaviors.impressions.str.split(' ')
+    test_behaviors.history = test_behaviors.history.astype(str).str.split(' ')
+    test_behaviors.impressions = test_behaviors.impressions.astype(str).str.split(' ')
 
     for row in test_behaviors.itertuples():
         tmp = row.history
+        # print('tmp[0]:', tmp[0])
         random.shuffle(row.history)
         test_behaviors.at[row.Index, 'history'] = ' '.join(tmp)
         tmp = row.impressions
         random.shuffle(tmp)
+        # print(tmp)
         y_true = [i.split('-')[1] for i in tmp]
         candidate_news = [i.split('-')[0] for i in tmp]
         test_behaviors.at[row.Index, 'impressions'] = ' '.join(candidate_news)
@@ -77,20 +79,25 @@ def process_behaviors(args):
 def process_news(args):
     random.seed(args.seed)
 
-    news_docs = pd.read_table(args.news_docs, header=None, usecols=[0, 6], names=['nid', 'body'], index_col=0, na_filter=False)
+    if os.path.exists(args.news_docs):
+        news_docs = pd.read_table(args.news_docs, header=None, usecols=[0, 6], names=['nid', 'body'], index_col=0, na_filter=False)
 
     if args.train:
         print('Preprocessing news in training set...')
-        train_set = os.path.join(args.train_dir, 'news.tsv')
-        train_news = pd.read_table(train_set, header=None, usecols=[0, 1, 2, 3, 4, 5], na_filter=False,
-                                   names=['news_id', 'category', 'subcategory', 'title', 'abstract', 'body'])
+        # train_set = os.path.join(args.train_dir, 'news.tsv')
+        train_set = os.path.join(args.train_dir, 'news_hot_burst.tsv')
+        train_news = pd.read_table(train_set, header=None, usecols=[0, 1, 2, 3, 4, 5,6,7,8,9], na_filter=False,
+                                   names=['news_id', 'category', 'subcategory', 'title', 'abstract', 'body','hot_click','hot_display','burst_click','burst_display'])
 
         # encode category, subcategory and word
         category_dict, word_freq_dict, word_dict = {}, {}, {}
         with tqdm(total=len(train_news), desc='Processing training news') as p:
             for row in train_news.itertuples():
-                nid = row.body.split('/')[-1].split('.')[-2]
-                news_body = news_docs.loc[nid, 'body']
+                if os.path.exists(args.news_docs):
+                    nid = row.body.split('/')[-1].split('.')[-2]
+                    news_body = news_docs.loc[nid, 'body']
+                else:
+                    news_body = ''
                 if news_body == '-':
                     news_body = ''
                 train_news.at[row.Index, 'body'] = news_body
@@ -148,15 +155,19 @@ def process_news(args):
                 train_news.at[row.Index, 'title'] = title
                 train_news.at[row.Index, 'abstract'] = abstract
                 train_news.at[row.Index, 'body'] = body
+                train_news.at[row.Index, 'hot_click'] = row.hot_click
+                train_news.at[row.Index, 'hot_display'] = row.hot_display
+                train_news.at[row.Index, 'burst_click'] = row.burst_click
+                train_news.at[row.Index, 'burst_display'] = row.burst_display
                 p.update(1)
         train_news.to_csv(os.path.join(args.data_dir, 'train_news.csv'), sep='\t', index=False,
-                          columns=['news_id', 'category', 'subcategory', 'title', 'abstract', 'body'])
+                          columns=['news_id', 'category', 'subcategory', 'title', 'abstract', 'body','hot_click','hot_display','burst_click','burst_display'])
         print('Finish news preprocessing for training')
     
     print('Preprocessing news in testing set...')
-    test_set = os.path.join(args.test_dir, 'news.tsv')
-    test_news = pd.read_table(test_set, header=None, usecols=[0, 1, 2, 3, 4, 5], na_filter=False,
-                               names=['news_id', 'category', 'subcategory', 'title', 'abstract', 'body'])
+    test_set = os.path.join(args.test_dir, 'news_hot_burst.tsv')
+    test_news = pd.read_table(test_set, header=None, usecols=[0, 1, 2, 3, 4, 5,6,7,8,9], na_filter=False,
+                               names=['news_id', 'category', 'subcategory', 'title', 'abstract', 'body','hot_click','hot_display','burst_click','burst_display'])
 
     # encode category, subcategory and word
     category_dict = dict(pd.read_csv(os.path.join(args.data_dir, 'category_dict.csv'), sep='\t', na_filter=False, header=0).values.tolist())
@@ -164,8 +175,11 @@ def process_news(args):
 
     with tqdm(total=len(test_news), desc='Encoding test news') as p:
         for row in test_news.itertuples():
-            nid = row.body.split('/')[-1].split('.')[-2]
-            news_body = news_docs.loc[nid, 'body']
+            if os.path.exists(args.news_docs):
+                nid = row.body.split('/')[-1].split('.')[-2]
+                news_body = news_docs.loc[nid, 'body']
+            else:
+                news_body = ''
             if news_body == '-':
                 news_body = ''
             test_news.at[row.Index, 'body'] = news_body
@@ -203,13 +217,18 @@ def process_news(args):
             test_news.at[row.Index, 'title'] = title
             test_news.at[row.Index, 'abstract'] = abstract
             test_news.at[row.Index, 'body'] = body
+            test_news.at[row.Index, 'hot_click'] = row.hot_click
+            test_news.at[row.Index, 'hot_display'] = row.hot_display
+            test_news.at[row.Index, 'burst_click'] = row.burst_click
+            test_news.at[row.Index, 'burst_display'] = row.burst_display
             p.update(1)
 
     test_news = test_news.append([{'news_id': 0, 'category': 0, 'subcategory': 0, 'title': [0 for _ in range(args.n_words_title)],
-                                   'abstract': [0 for _ in range(args.n_words_abstract)], 'body': [0 for _ in range(args.n_words_body)]}],
+                                   'abstract': [0 for _ in range(args.n_words_abstract)], 'body': [0 for _ in range(args.n_words_body)],
+                                   'hot_click': 0,'hot_display': 0,'burst_click': 0,'burst_display': 0}],
                                    ignore_index=True)
     test_news.to_csv(os.path.join(args.data_dir, 'test_news.csv'), sep='\t', index=False,
-                      columns=['news_id', 'category', 'subcategory', 'title', 'abstract', 'body'])
+                      columns=['news_id', 'category', 'subcategory', 'title', 'abstract', 'body','hot_click','hot_display','burst_click','burst_display'])
     print('Finish news preprocessing for testing')
 
 
@@ -229,6 +248,8 @@ def word_embedding(args):
                 word_missing += 1
             p.update(1)
     np.save(os.path.join(args.data_dir, 'word_embedding.npy'), embedding_result)
+    print('embedding_result.shape:', embedding_result.shape)
+    print('embedding_result[0]:', embedding_result[0])
     print('\ttotal_missing_word:', word_missing)
     print('Finish word embedding')
 

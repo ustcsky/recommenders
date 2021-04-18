@@ -1,3 +1,7 @@
+# coding:utf-8
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "2,3"
+
 import torch
 from option import args
 from preprocess import preprocess_data
@@ -5,7 +9,6 @@ from loader import Loader
 from model import Model
 from trainer import Trainer
 import numpy as np
-import os
 
 torch.manual_seed(args.seed)
 
@@ -20,7 +23,10 @@ def main():
             np.load(os.path.join(args.data_dir, 'word_embedding.npy'))).float()
     except FileNotFoundError:
         word_embedding = None
-    my_model = Model(args, word_embedding)
+    device = torch.device("cuda")
+    my_model = Model(args, word_embedding).to(device)
+    # print('my_model.device:', my_model.device)
+
     my_loader = Loader(args)
     my_trainer = Trainer(args, my_model, my_loader)
     while not my_trainer.terminate():

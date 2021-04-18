@@ -1,6 +1,6 @@
 # coding:utf8
 from torch import nn
-from .basic_module import BasicModule
+from basic_module import BasicModule
 import torch
 from pytorch_pretrained_bert import BertTokenizer, BertModel, BertForMaskedLM
 # OPTIONAL: if you want to have more information on what's happening, activate the logger as follows

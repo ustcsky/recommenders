@@ -1,0 +1,2 @@
+(pytorch-book) [fengbing@ict-10 src]$ python main.py --model=NAML --pre=True --cpu=False --n_GPUs=2
+

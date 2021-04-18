@@ -1,3 +1,4 @@
+# coding:utf-8
 from torch.utils.data import Dataset
 import os
 import pandas as pd
@@ -7,6 +8,7 @@ import torch
 class MyDataset(Dataset):
     def __init__(self, args, type):
         super(MyDataset, self).__init__()
+        self.device = torch.device("cuda")
         self.args = args
         self.type = type
         self.empty_news = {
@@ -14,7 +16,11 @@ class MyDataset(Dataset):
             'subcategory': 0,
             'title': [0 for _ in range(args.n_words_title)],
             'abstract': [0 for _ in range(args.n_words_abstract)],
-            'body': [0 for _ in range(args.n_words_body)]
+            'body': [0 for _ in range(args.n_words_body)],
+            'hot_click': 0,
+            'hot_display': 0,
+            'burst_click': 0,
+            'burst_display': 0
         }
 
         if type == 'train':
@@ -36,7 +42,11 @@ class MyDataset(Dataset):
                     'subcategory': row.subcategory,
                     'title': literal_eval(row.title),
                     'abstract': literal_eval(row.abstract),
-                    'body': literal_eval(row.body)
+                    'body': literal_eval(row.body),
+                    'hot_click': row.hot_click,
+                    'hot_display': row.hot_display,
+                    'burst_click': row.burst_click,
+                    'burst_display': row.burst_display
                 }
             else:
                 news = self.empty_news
@@ -66,6 +76,7 @@ class MyDataset(Dataset):
 class TestUserDataset(Dataset):
     def __init__(self, args, total_test_news, total_news_id):
         super(TestUserDataset, self).__init__()
+        self.device = torch.device("cuda")
         self.args = args
         self.total_test_news = total_test_news
         self.total_news_id = total_news_id
@@ -85,7 +96,7 @@ class TestUserDataset(Dataset):
             length = len(tmp)
             if length < self.args.n_browsed_news:
                 repeat_times = self.args.n_browsed_news - length
-                item = torch.cat([self.total_test_news[self.total_news_id[i]].unsqueeze(dim=0) for i in tmp])
+                item = torch.cat([self.total_test_news[self.total_news_id[i]].unsqueeze(dim=0) for i in tmp]) #按维数0拼接（竖着拼）
                 item = torch.cat([item, torch.cat([self.empty_news_vector for _ in range(repeat_times)])])
             else:
                 item = torch.cat([self.total_test_news[self.total_news_id[i]].unsqueeze(dim=0) for i in tmp[:self.args.n_browsed_news]])
@@ -94,6 +105,7 @@ class TestUserDataset(Dataset):
 class TestNewsDataset(Dataset):
     def __init__(self, args):
         super(TestNewsDataset, self).__init__()
+        self.device = torch.device("cuda")
         self.args = args
         self.news = pd.read_table(os.path.join(args.data_dir, 'test_news.csv'), na_filter=False)
 
@@ -107,6 +119,10 @@ class TestNewsDataset(Dataset):
             'subcategory': row.subcategory,
             'title': literal_eval(row.title),
             'abstract': literal_eval(row.abstract),
-            'body': literal_eval(row.body)
+            'body': literal_eval(row.body),
+            'hot_click': row.hot_click,
+            'hot_display': row.hot_display,
+            'burst_click': row.burst_click,
+            'burst_display': row.burst_display
         }
         return row.news_id, item

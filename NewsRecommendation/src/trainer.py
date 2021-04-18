@@ -1,3 +1,4 @@
+# coding:utf-8
 import torch
 import torch.nn.functional as F
 from tqdm import tqdm
@@ -12,6 +13,7 @@ from torch.utils.data import DataLoader
 
 class Trainer:
     def __init__(self, args, model, loader):
+        self.device = torch.device("cuda")
         self.args = args
         self.model = model
         self.train_loader = loader.train_loader
@@ -21,6 +23,7 @@ class Trainer:
         self.loss_list = []
         self.epoch = 0
         self.batch_num = 0
+
         if args.load is not None:
             checkpoint = torch.load(args.load, map_location=self.args.device)
             self.optimizer.load_state_dict(checkpoint['optimizer'])
@@ -29,13 +32,13 @@ class Trainer:
             self.loss_list = checkpoint['loss_list']
             print('Loading optimizer from', args.load)
             print('Resume from epoch', self.epoch)
-        if not os.path.exists('../result'):
-            os.mkdir('../result')
+        if not os.path.exists('../../result'):
+            os.mkdir('../../result')
         if self.args.save is None:
             dir_name = self.args.model + '_' + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         else:
             dir_name = self.args.save
-        self.save_dir = os.path.join('../result', dir_name)
+        self.save_dir = os.path.join('../../result', dir_name)
         if not os.path.exists(self.save_dir):
             os.mkdir(self.save_dir)
         if not os.path.exists(os.path.join(self.save_dir, 'checkpoints')):
@@ -44,23 +47,30 @@ class Trainer:
     def train(self):
         self.model.train()
         print('[Epoch ' + str(self.epoch + 1) + ']')
+        cnt_test = 0
         with tqdm(total=len(self.train_loader), desc='Training') as p:
             for i, batch in enumerate(self.train_loader):
                 self.optimizer.zero_grad()
-                if self.args.model == 'TANR':
-                    predict, topic_loss = self.model(batch)
-                else:
-                    predict = self.model(batch)
-                loss = torch.stack([x[0] for x in -F.log_softmax(predict, dim=1)]).mean()
-                if self.args.model == 'TANR':
-                    loss += self.args.topic_weight * topic_loss
+                # if self.args.model == 'TANR':
+                #     predict, topic_loss = self.model(batch)
+                # else:
+                predict = self.model(batch) # 前向传播
+                # if cnt_test == 0:
+                #     print('predict:', predict)
+                loss = torch.stack([x[0] for x in -F.log_softmax(predict, dim=1)]).mean() # 计算loss
+                # if cnt_test == 0:
+                #     # print('-F.log_softmax(predict, dim=1):', -F.log_softmax(predict, dim=1))
+                #     print('loss:', loss)
+                #     cnt_test += 1
+                # if self.args.model == 'TANR':
+                #     loss += self.args.topic_weight * topic_loss
                 self.loss_list.append(loss.item())
                 if i % 200 == 0 or i + 1 == len(self.train_loader):
                     tqdm.write('Loss: ' + str(np.mean(self.loss_list)))
-                    if self.args.model == 'TANR':
-                        tqdm.write('\tTopic_loss: ' + str(topic_loss.item()))
-                loss.backward()
-                self.optimizer.step()
+                    # if self.args.model == 'TANR':
+                    #     tqdm.write('\tTopic_loss: ' + str(topic_loss.item()))
+                loss.backward() # 反向传播
+                self.optimizer.step() # 更新参数
                 self.batch_num += 1
                 p.update(1)
         self.epoch += 1
