@@ -1,6 +1,6 @@
 # coding:utf-8
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "2,3"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 import torch
 from option import args

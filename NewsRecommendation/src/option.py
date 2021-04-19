@@ -74,7 +74,7 @@ parser.add_argument('--train', type=bool, default=True,
                     help='train or test only')
 parser.add_argument('--epochs', type=int, default=40,
                     help='number of epochs for training')
-parser.add_argument('--batch_size', type=int, default=64,
+parser.add_argument('--batch_size', type=int, default=128,
                     help='size of each batch')
 parser.add_argument('--lr', type=float, default=0.001,
                     help='learning rate')

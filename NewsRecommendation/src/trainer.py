@@ -48,6 +48,7 @@ class Trainer:
         self.model.train()
         print('[Epoch ' + str(self.epoch + 1) + ']')
         cnt_test = 0
+        # print('/', len(self.train_loader)) ##
         with tqdm(total=len(self.train_loader), desc='Training') as p:
             for i, batch in enumerate(self.train_loader):
                 self.optimizer.zero_grad()
